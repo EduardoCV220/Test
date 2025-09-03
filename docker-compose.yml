@@ -1,0 +1,93 @@
+version: '3'
+services:
+
+  #PHP Service
+  laravel_project:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: laravel_project
+    restart: unless-stopped
+    tty: true
+    environment:
+      SERVICE_NAME: laravel_project
+      SERVICE_TAGS: dev
+      DB_CONNECTION: mysql
+      DB_HOST: laravel_project_db
+      DB_PORT: 3306
+      DB_DATABASE: laravel_project
+      DB_USERNAME: laravel_project_user
+      DB_PASSWORD: laravel_project_db_pass
+    working_dir: /var/www
+    volumes:
+       - ./app:/var/www
+       - ./php/local.ini:/usr/local/etc/php/conf.d/local.ini
+    networks:
+      - laravel_project_network
+
+  #Nginx Service
+  laravel_project_webserver:
+    image: nginx:alpine
+    container_name: laravel_project_webserver
+    restart: unless-stopped
+    command: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
+    tty: true
+    ports:
+      - "80:80"
+    volumes:
+      - ./app:/var/www
+      - ./nginx/conf.d/:/etc/nginx/conf.d/
+    networks:
+      - laravel_project_network
+
+  #MySQL Service
+  laravel_project_db:
+    image: mysql:8.0-bookworm
+    container_name: laravel_project_db
+    restart: unless-stopped
+    tty: true
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_DATABASE: laravel_project
+      MYSQL_ROOT_PASSWORD: laravel_project_pass
+      MYSQL_USER: laravel_project_user
+      MYSQL_PASSWORD: laravel_project_db_pass
+      SERVICE_TAGS: dev
+      SERVICE_NAME: mysql
+    volumes:
+      - ./dbdata:/var/lib/mysql
+      - ./mysql/my.cnf:/etc/mysql/my.cnf
+    networks:
+      - laravel_project_network
+
+  #Cron Service
+  laravel_project_cron:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: laravel_project_cron
+    restart: unless-stopped
+    tty: true
+    environment:
+      SERVICE_NAME: laravel_project
+      SERVICE_TAGS: dev
+      DB_CONNECTION: mysql
+      DB_HOST: laravel_project_db
+      DB_PORT: 3306
+      DB_DATABASE: laravel_project
+      DB_USERNAME: laravel_project_user
+      DB_PASSWORD: laravel_project_db_pass
+    volumes:
+      - ./app:/var/www
+    entrypoint: ["/bin/sh", "-c", "while :; do php /var/www/artisan schedule:run; sleep 60; done"]
+    networks:
+      - laravel_project_network
+
+#Docker Networks
+networks:
+  laravel_project_network:
+    driver: bridge
+volumes:
+  dbdata:
+    driver: local
