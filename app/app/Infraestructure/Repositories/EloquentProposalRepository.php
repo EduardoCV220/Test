@@ -7,7 +7,7 @@ use App\Domain\Repositories\ProposalRepositoryInterface;
 use App\Domain\Entities\Proposal;
 use App\Domain\ValueObjects\Cpf;
 use App\Domain\ValueObjects\Money;
-
+use App\Domain\ValueObjects\Nome;
 use App\Models\Proposal as EloquentProposalModel;
 
 class EloquentProposalRepository implements ProposalRepositoryInterface
@@ -37,7 +37,7 @@ class EloquentProposalRepository implements ProposalRepositoryInterface
     {
         $eloquent = EloquentProposalModel::find($proposal->id());
         if ($eloquent) {
-            $eloquent->nome = $proposal->nome();
+            $eloquent->nome = $proposal->nome()->value();
             $eloquent->cpf = $proposal->cpf()->value();
             $eloquent->data_nascimento = $proposal->data_nascimento();
             $eloquent->valor_emprestimo = $proposal->valor_emprestimo()->value();
@@ -53,7 +53,7 @@ class EloquentProposalRepository implements ProposalRepositoryInterface
         return Proposal::create(
             id: $model->id,
             cpf: new Cpf($model->cpf),
-            nome: $model->nome,
+            nome: new Nome($model->nome),
             dataNascimento: new \DateTimeImmutable($model->data_nascimento),
             valorEmprestimo: new Money($model->valor_emprestimo),
             chavePix: $model->chave_pix,
