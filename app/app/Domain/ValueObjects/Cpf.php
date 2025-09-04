@@ -10,7 +10,7 @@ class Cpf
 
     public function __construct(string $value)
     {
-        if (!$this->is_valid($value)) {
+        if (!$this->isValid($value)) {
             throw new InvalidCpfException();
         }
 
@@ -22,22 +22,22 @@ class Cpf
         return $this->value;
     }
 
-    private function is_valid($value): bool
+    private function isValid(string $value): bool
     {
         // Extrai somente os números
-        $cpf = preg_replace( '/[^0-9]/is', '', $value );
-        
-        // Verifica se foi informado todos os digitos corretamente
-        if (strlen($cpf) != 11) {
+        $cpf = preg_replace('/[^0-9]/is', '', $value);
+
+        // Verifica se foi informado todos os dígitos corretamente
+        if (strlen($cpf) !== 11) {
             return false;
         }
 
-        // Verifica se foi informada uma sequência de digitos repetidos. Ex: 111.111.111-11
+        // Verifica se foi informada uma sequência de dígitos repetidos. Ex: 111.111.111-11
         if (preg_match('/(\d)\1{10}/', $cpf)) {
             return false;
         }
 
-        // Faz o calculo para validar o CPF
+        // Faz o cálculo para validar o CPF
         for ($t = 9; $t < 11; $t++) {
             for ($d = 0, $c = 0; $c < $t; $c++) {
                 $d += $cpf[$c] * (($t + 1) - $c);
@@ -47,6 +47,7 @@ class Cpf
                 return false;
             }
         }
+
         return true;
     }
 }

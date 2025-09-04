@@ -10,7 +10,7 @@ class Money
 
     public function __construct(string $value)
     {
-        if (!$this->is_valid($value)) {
+        if (!$this->isValid($value)) {
             throw new Exception('Valor Invalido');
         }
 
@@ -22,15 +22,12 @@ class Money
         return $this->value;
     }
 
-    private function is_valid($value): bool
+    private function isValid(string $value): bool
     {
-        // Extrai somente os números
         if (!is_numeric($value)) {
             return false;
         }
-        else{
 
-      return true;
-        }
+        return true;
     }
 }

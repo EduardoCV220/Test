@@ -1,23 +1,32 @@
 <?php
+
 namespace App\Domain\Entities;
 
 use App\Domain\ValueObjects\Cpf;
 use App\Domain\ValueObjects\Money;
-use DateTime;
+use App\Domain\ValueObjects\Nome;
 
-class Proposal{
-
+class Proposal
+{
     private ?int $id;
     private Cpf $cpf;
-    private string $nome;
-    private string $dataNascimento;
+    private Nome $nome;
+    private \DateTimeImmutable $dataNascimento;
     private Money $valorEmprestimo;
     private string $chavePix;
     private int $autenticado;
     private int $notificado;
 
-
-    private function __construct($id = null, $cpf, $nome,$dataNascimento, $valorEmprestimo, $chavePix, $autenticado = 0, $notificado = 0){
+    private function __construct(
+        ?int $id = null,
+        Cpf $cpf,
+        Nome $nome,
+        \DateTimeImmutable $dataNascimento,
+        Money $valorEmprestimo,
+        string $chavePix,
+        int $autenticado = 0,
+        int $notificado = 0
+    ) {
         $this->id = $id;
         $this->cpf = $cpf;
         $this->nome = $nome;
@@ -28,52 +37,69 @@ class Proposal{
         $this->notificado = $notificado;
     }
 
-    public static function create(?int $id = null, Cpf $cpf, string $nome, string $dataNascimento, Money $valorEmprestimo, string $chavePix, ?int $autenticado = 0, ?int $notificado = 0){
-        return new self($id, $cpf, $nome, $dataNascimento, $valorEmprestimo, $chavePix, $autenticado, $notificado);
+    public static function create(
+        ?int $id = null,
+        Cpf $cpf,
+        Nome $nome,
+        \DateTimeImmutable $dataNascimento,
+        Money $valorEmprestimo,
+        string $chavePix,
+        int $autenticado = 0,
+        int $notificado = 0
+    ): self {
+        return new self(
+            $id,
+            $cpf,
+            $nome,
+            $dataNascimento,
+            $valorEmprestimo,
+            $chavePix,
+            $autenticado,
+            $notificado
+        );
     }
 
-        public function nome() :string
+    public function nome(): Nome
     {
         return $this->nome;
     }
 
-
-    public function id() :int
+    public function id(): ?int
     {
         return $this->id;
     }
 
-    public function cpf() :Cpf
+    public function cpf(): Cpf
     {
         return $this->cpf;
     }
 
-    public function data_nascimento() :string
+    public function data_nascimento(): \DateTimeImmutable
     {
         return $this->dataNascimento;
     }
 
 
-    public function valor_emprestimo() :Money
+    public function valor_emprestimo(): Money
     {
         return $this->valorEmprestimo;
     }
 
 
-    public function chave_pix() :string
+    public function chave_pix(): string
     {
         return $this->chavePix;
     }
 
 
-    public function notificado() :string
+    public function notificado(): int
     {
         return $this->notificado;
     }
 
 
 
-    public function autenticado() :string
+    public function autenticado(): int
     {
         return $this->autenticado;
     }
@@ -84,15 +110,13 @@ class Proposal{
         $this->id = $id;
     }
 
-    public function setAutenticado(int $flag) : void
+    public function setAutenticado(int $flag): void
     {
         $this->autenticado = $flag;
     }
 
-        public function setNotificado(int $flag) : void
+    public function setNotificado(int $flag): void
     {
-        $this->autenticado = $flag;
+        $this->notificado = $flag;
     }
 }
-
-?>

@@ -8,19 +8,18 @@ use App\Jobs\ProposalJob;
 
 class ProposalController extends Controller
 {
-    public function __construct(private ProposalService $proposalService){ }
+    public function __construct(private ProposalService $proposalService) {}
 
     public function store(Request $request)
     {
 
         $proposal = $this->proposalService->register($request['cpf'], $request['nome'], $request['data_nascimento'], $request['valor_emprestimo'], $request['chave_pix']);
 
-        ProposalJob::dispatch($proposal->id(), $this->proposalService);
-        
+        ProposalJob::dispatch($proposal->id());
+
         return response()->json([
             'status' => 'Ok',
             'message' => 'Proposta Cadastrada com sucesso'
         ]);
     }
-
 }
